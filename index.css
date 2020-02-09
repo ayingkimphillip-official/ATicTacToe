@@ -1,0 +1,131 @@
+body {
+    background-color: rgb(85, 83, 83);
+}
+
+#game-label {
+    width: 200px;
+    height: 50px;
+    text-align: center;
+    margin-left: calc(50% - 200px / 2);
+    margin-top: calc(5vh - 50px / 2);
+}
+
+#game-label label {
+    color: white;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#game-legend {
+    width: 150px;
+    height: 50px;
+    margin-left: calc(25% - 150px / 2);
+    color: white;
+}
+
+#game-legend h5 {
+    margin: 0px;
+}
+
+#game-legend p {
+    margin: 0px;
+}
+
+.player1 {
+    color: red;
+}
+
+.player2 {
+    color: blue;
+}
+
+#player-container {
+    margin-top: -60px;
+    text-align: center;
+    border: 0px;
+}
+
+#player-container input {
+    width: 350px;
+    height: 60px;
+    font-size: 50px;
+    font-weight: 200px;
+    background-color: white;
+    text-align: center;
+}
+
+#game-container {
+    width: 600px;
+    height: 600px;
+    margin-left: calc(50% - 600px / 2);
+    margin-top: calc(8vh - 100px / 2);
+    border: 1px solid white;
+    position: absolute;
+}
+
+#game-container input {
+    width: 600px;
+    height: 50px;
+    background-color: white;
+    text-align: center;
+    border: 0px;
+    padding: 0px;
+    position: absolute;
+}
+
+#game-options {
+    text-align: center;
+    margin-left: 180px;
+    margin-top: 60px;
+    position: absolute;
+}
+
+#btnGameStart {
+    background-color: green;
+    color: white;
+}
+
+#btnGameStart:hover {
+    cursor: pointer;
+}
+
+#btnGameReset {
+    background-color: red;
+    color: white;
+}
+
+#btnGameReset:hover {
+    cursor: pointer;
+}
+
+#gameBoard {
+    width: 600px;
+    height: 500px;
+    margin-top: 100px;
+}
+
+#gameBoard button {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+#gameBoard button:hover {
+    cursor: pointer;
+}
+
+.cell {
+    width: 150px;
+    height: 150px;
+    border: 1px solid black;
+    float: left;
+    margin-left: calc(20% - 170px / 2);
+    margin-top: 10px;
+}
+
+.row {
+    float: left;
+    width: 100%;
+    background-color: rgb(85, 83, 83);
+    border: 0px;
+    padding: 0px;
+}
