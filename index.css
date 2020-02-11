@@ -39,6 +39,10 @@ body {
     color: blue;
 }
 
+.noWinner {
+    color: green;
+}
+
 #player-container {
     margin-top: -60px;
     text-align: center;
@@ -89,6 +93,12 @@ body {
     cursor: pointer;
 }
 
+#btnGameStart:disabled {
+    cursor: default;
+    background-color: grey;
+    color:white;
+}
+
 #btnGameReset {
     background-color: red;
     color: white;
@@ -111,6 +121,11 @@ body {
 
 #gameBoard button:hover {
     cursor: pointer;
+}
+
+#gameBoard button:disabled {
+    cursor: default;
+    background-color: grey;
 }
 
 .cell {

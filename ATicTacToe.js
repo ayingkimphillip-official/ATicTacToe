@@ -3,12 +3,13 @@ var displayWinner;
 // var gameBoard;
 var gameBoardButton;
 var players = [
-    1,
-    2
+    "X",
+    "O"
 ];
-var currentPlayer;
+var currentPlayer = 0;
 var gameBoard = [];
 var boardScanner = [];
+let isWinner = false;
 
 var btnGameStart;
 var btnGameReset;
@@ -32,6 +33,13 @@ function initialize() {
     generateGameBoard();
     gameBoardButton = document.querySelectorAll(".cell");
 
+    for (let i = 0; i < WIDTH; i++) {
+        for (let j = 0; j < HEIGHT; j++) {
+            boardScanner[i][j].innerText = " ";
+            boardScanner[i][j].disabled = true;
+        }
+    }
+
     displayPlayer.value = "";
     displayWinner.hidden = true;
     displayWinner.value = "";
@@ -40,12 +48,6 @@ function initialize() {
 function attachEventHandlers() {
     btnGameStart.addEventListener("click", onBtnGameStartClicked);
     btnGameReset.addEventListener("click", onBtnGameResetClicked);
-
-    for (var i = 0; i < gameBoardButton.length; i++) {
-        gameBoardButton[i].addEventListener("click", onGameBoardButtonClicked);
-        gameBoardButton[i].disabled = true;
-    }
-
     for (var i = 0; i < WIDTH; i++) {
         for (var j = 0; j < HEIGHT; j++) {
             boardScanner[i][j].addEventListener("click", onGameBoardButtonClicked);
@@ -57,9 +59,11 @@ function onBtnGameStartClicked() {
     currentPlayer = players[0];
     displayPlayer.classList.add("player1");
     displayPlayer.value = "Player 1";
-    for (var i = 0; i < gameBoardButton.length; i++) {
-        gameBoardButton[i].disabled = false;
-        gameBoardButton[i].innerText = "";
+    for (let i = 0; i < WIDTH; i++) {
+        for (let j = 0; j < HEIGHT; j++) {
+            boardScanner[i][j].innerText = " ";
+            boardScanner[i][j].disabled = false;
+        }
     }
     btnGameStart.disabled = true;
 }
@@ -70,11 +74,15 @@ function onBtnGameResetClicked() {
     btnGameStart.disabled = false;
     displayWinner.hidden = true;
     displayPlayer.classList.remove("player1", "player2");
-
-    for (var i = 0; i < gameBoardButton.length; i++) {
-        gameBoardButton[i].innerText = null;
-        gameBoardButton[i].disabled = true;
+    displayWinner.classList.remove("player1", "player2", "noWinner");
+    for (let i = 0; i < WIDTH; i++) {
+        for (let j = 0; j < HEIGHT; j++) {
+            boardScanner[i][j].classList.remove("player1", "player2");
+            boardScanner[i][j].innerText = null;
+            boardScanner[i][j].disabled = true;
+        }
     }
+    isWinner = false;
 }
 
 function generateGameBoard() {
@@ -82,99 +90,172 @@ function generateGameBoard() {
         var row = document.createElement("div");
         row.classList.add("row");
         gameBoard.appendChild(row);
-        boardScanner.push([]);
-        boardScanner[i].push(new Array(HEIGHT));
         for (var j = 0; j < HEIGHT; j++) {
             var cell = document.createElement("button");
             cell.classList.add("cell");
+            cell.x = i;
+            cell.y = j;
             row.appendChild(cell);
+
+            if (boardScanner[i] == null) {
+                boardScanner[i] = [];
+            }
             boardScanner[i][j] = cell;
         }
     }
 }
 
 function onGameBoardButtonClicked(mouseclick) {
-    if (currentPlayer == 1) {
-        displayPlayer.classList.remove("player1");
-        displayPlayer.classList.add("player2");
+    if (currentPlayer == players[0]) {
         mouseclick.target.classList.add("player1");
         mouseclick.target.innerText = "X";
         mouseclick.target.disabled = true;
         currentPlayer = players[1];
+        displayPlayer.classList.remove("player1");
+        displayPlayer.classList.add("player2");
         displayPlayer.value = "Player 2";
     }
     else {
-        displayPlayer.classList.remove("player2");
-        displayPlayer.classList.add("player1");
         mouseclick.target.classList.add("player2");
         mouseclick.target.innerText = "O";
         mouseclick.target.disabled = true;
         currentPlayer = players[0];
+        displayPlayer.classList.remove("player2");
+        displayPlayer.classList.add("player1");
         displayPlayer.value = "Player 1";
     }
     checkForWinner();
+    checkForDraw();
 }
 
 function checkForWinner() {
-    for (var i = 0; i < WIDTH; i++) {
-        for (var j = 0; j < HEIGHT; j++) {
-            //Horizontal Checker
-            if (j == 0) {
-                if (boardScanner[i][j].innerText == "X" && boardScanner[i][j + 1].innerText == "X" && boardScanner[i][j + 2].innerText == "X") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 1";
+    let result = false;
+    let counter = (WIDTH*HEIGHT);
+    for (let i = 0; i < WIDTH; i++) {
+        for (let j = 0; j < HEIGHT; j++) {
+            let currentCell = boardScanner[i][j];
+            result =
+                checkForHorizontalWinner(currentCell) ||
+                checkForVerticalWinner(currentCell) ||
+                checkForDiagonalWinner(currentCell);
+            if (result == true) {
+                isWinner = result;
+                for (let i = 0; i < WIDTH; i++) {
+                    for (let j = 0; j < HEIGHT; j++) {
+                        boardScanner[i][j].disabled = true;
+                    }
                 }
-                else if (boardScanner[i][j].innerText == "O" && boardScanner[i][j + 1].innerText == "O" && boardScanner[i][j + 2].innerText == "O") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
+                if (currentPlayer == players[1]) {
+                    displayPlayer.value = " ";
                     displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 2";
+                    displayWinner.classList.add("player1");
+                    displayWinner.value = "The winner is Player 1!";
                 }
-            }
-            //Vertical Checker
-            if (i == 0) {
-                if (boardScanner[i][j].innerText == "X" && boardScanner[i + 1][j].innerText == "X" && boardScanner[i + 2][j].innerText == "X") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
+                else {
+                    displayPlayer.value = " ";
                     displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 1";
-                }
-                else if (boardScanner[i][j].innerText == "O" && boardScanner[i + 1][j].innerText == "O" && boardScanner[i + 2][j].innerText == "O") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 2";
-                }
-            }
-            //Diagonal Checker
-            if (i == 0 && j == 0) {
-                if (boardScanner[i][j].innerText == "X" && boardScanner[i + 1][j + 1].innerText == "X" && boardScanner[i + 2][j + 2].innerText == "X") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 1";
-                }
-                else if (boardScanner[i][j].innerText == "O" && boardScanner[i + 1][j + 1].innerText == "O" && boardScanner[i + 2][j + 2].innerText == "O") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 2";
-                }
-                else if (boardScanner[i][j + 2].innerText == "X" && boardScanner[i + 1][j + 1].innerText == "X" && boardScanner[i + 2][j].innerText == "X") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 1";
-                }
-                else if (boardScanner[i][j + 2].innerText == "O" && boardScanner[i + 1][j + 1].innerText == "O" && boardScanner[i + 2][j].innerText == "O") {
-                    console.log("HERE!");
-                    displayPlayer.value = "";
-                    displayWinner.hidden = false;
-                    displayWinner.value = "Winner is Player 2";
+                    displayWinner.classList.add("player2");
+                    displayWinner.value = "The winner is Player 2!";
                 }
             }
         }
     }
 }
+
+function checkForHorizontalWinner(cell) {
+    let result = false;
+    let symbol = cell.innerText;
+
+    if (symbol.length > 0) {
+        let counter = 1;
+
+        for (let i = cell.y + 1; i < WIDTH; i++) {
+            let currentCell = boardScanner[cell.x][i];
+            var currentSymbol = currentCell.innerText;
+            if (currentSymbol == symbol) {
+                counter++;
+            }
+            if (counter >= WIDTH) {
+                result = true;
+            }
+        }
+    }
+    return result;
+}
+
+function checkForVerticalWinner(cell) {
+    let result = false;
+    let symbol = cell.innerText;
+
+    if (symbol.length > 0) {
+        let counter = 1;
+
+        for (let i = cell.x + 1; i < WIDTH; i++) {
+            let currentCell = boardScanner[i][cell.y];
+            var currentSymbol = currentCell.innerText;
+            if (currentSymbol == symbol) {
+                counter++;
+            }
+            if (counter >= WIDTH) {
+                result = true;
+            }
+        }
+    }
+    return result;
+}
+
+function checkForDiagonalWinner(cell) {
+    let result = false;
+    let symbol = cell.innerText;
+
+    if (symbol.length > 0) {
+        //From UpperLeft to LowerRight and vice versa
+        let counter = 1;
+        let i = cell.x + 1;
+        let j = cell.y + 1;
+        while (i < WIDTH && j < HEIGHT) {
+            let currentCell = boardScanner[i++][j++];
+            let currentSymbol = currentCell.innerText;
+            if (currentSymbol == symbol) {
+                counter++;
+            }
+            if (counter >= WIDTH) {
+                result = true;
+            }
+        }
+
+        //From UpperRight to LowerLeft and vice versa
+        counter = 1;
+        i = cell.x - 1;
+        j = cell.y + 1;
+        while (i >= 0 && j < HEIGHT) {
+            let currentCell = boardScanner[i--][j++];
+            let currentSymbol = currentCell.innerText;
+            if (currentSymbol == symbol) {
+                counter++;
+            }
+            if (counter >= WIDTH) {
+                result = true;
+            }
+        }
+    }
+    return result;
+}
+
+function checkForDraw () {
+    let counter = 0;
+    for (let i = 0; i < WIDTH; i++) {
+        for (let j = 0; j < HEIGHT; j++) {
+            if(boardScanner[i][j].disabled == true && isWinner == false) {
+                counter++;
+                if(counter == (WIDTH*HEIGHT) && isWinner == false) {
+                    displayPlayer.value = " ";
+                    displayWinner.hidden = false;
+                    displayWinner.classList.add("noWinner");
+                    displayWinner.value = "Tie!";
+                }
+            }
+        }
+    }
+}
+
